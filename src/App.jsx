@@ -17,8 +17,65 @@ import PageHeader from './layout/PageHeader';
 import PageTitle from './layout/PageTitle';
 import Summary from './Summary';
 import TableRow from './TableRow';
+import { useEffect, useState } from 'react';
+import { api } from './provider';
+import axios from "axios";
 
 function App() {
+
+  const randomNumber = (min, max) => {
+    return Math.floor(Math.random() * (max - min) + min);
+  };
+
+  const productObjetct = {
+    name: 'produto',
+    category: 'categoria',
+    price: randomNumber(90, 300),
+    quantity: 1
+  };
+
+  const [cart, setCart] = useState([]);
+
+  const fetchData = () => {
+    api.get('/cart').then((response) => setCart(response.data));
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleAddItem = () => {
+    api.post('/cart', productObjetct).then(response => console.log(response));
+    fetchData();
+  };
+
+  const handleRemoveItem = (id) => {
+    api.delete(`/cart/${id}`);
+    fetchData();
+  };
+
+  const handleUpdateItem = (item, action) => {
+    var newQuatity = item.quantity;
+
+    if (action === 'increase') {
+      if (newQuatity === 1) {
+        return;
+      }
+      newQuatity -= 1;
+    }
+    if (action === 'decrease') {
+      newQuatity += 1;
+    }
+    
+    const newData = { ...item, quantity: newQuatity };
+    delete newData._id;
+    
+    api.put(`/cart/${item._id}`, newData).then((response) => {
+      console.log(response);
+      fetchData();
+    });
+  };
+
   return (
     <>
       <PageHeader />
@@ -26,6 +83,7 @@ function App() {
         <PageTitle data={'Seu carrinho'} />
         <div className='content'>
           <section>
+            <button onClick={handleAddItem} style={{ padding: '5px 10px', marginBottom: 15 }}>Add to cart</button>
             <table>
               <thead>
                 <tr>
@@ -37,7 +95,16 @@ function App() {
                 </tr>
               </thead>
               <tbody>
-                <TableRow />
+                {cart.map((item) => (
+                  <TableRow key={item._id} data={item} handleRemoveItem={handleRemoveItem} handleUpdateItem={handleUpdateItem} />
+                ))}
+                {cart.length === 0 && (
+                  <tr>
+                    <td colSpan='5' style={{ textAlign: 'center' }}>
+                      <b>Carrinho de compras vazio.</b>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </section>
