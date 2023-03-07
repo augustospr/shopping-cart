@@ -57,13 +57,13 @@ function App() {
   const handleUpdateItem = (item, action) => {
     var newQuatity = item.quantity;
 
-    if (action === 'increase') {
+    if (action === 'decrease') {
       if (newQuatity === 1) {
         return;
       }
       newQuatity -= 1;
     }
-    if (action === 'decrease') {
+    if (action === 'increase') {
       newQuatity += 1;
     }
     
@@ -75,6 +75,19 @@ function App() {
       fetchData();
     });
   };
+
+  const getTotal = () => {
+    var sum = 0;
+
+    for (let item of cart) {
+      console.log(cart);
+      sum += item.price * item.quantity;
+    }
+
+    return sum;
+  };
+
+  const cartTotal = getTotal();
 
   return (
     <>
@@ -109,7 +122,7 @@ function App() {
             </table>
           </section>
           <aside>
-            <Summary />
+            <Summary cartTotal={cartTotal} />
           </aside>
         </div>
       </main>
