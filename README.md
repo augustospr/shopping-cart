@@ -1,6 +1,4 @@
-# fernandev
-
-**Se você curtir esse conteúdo, deixa uma STAR aí nesse repo,** porque isso me motiva a trazer mais conteúdos desse gênero.
+# augustospr
 
 ## React Interview Challenge #06
 
